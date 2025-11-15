@@ -41,7 +41,7 @@ export default function App() {
     setSubmittedData(formData);
 
     try {
-      const res = await fetch("https://29567d4fe1f0.ngrok-free.app/schedule-sms", {
+      const res = await fetch("https://punctualbe.onrender.com/schedule-sms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
