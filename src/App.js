@@ -32,10 +32,10 @@ export default function App() {
       transport_mode: transportMode,
       preparation_minutes: prepMinutes,
       prep_checklist: prepChecklist,
-      target_time: eventTime,
+      target_time: eventDate.toISOString(),
       travel_minutes: travelMinutes,
-      wake_time: wakeTime,
-      leave_time: leaveHomeTime,
+      wake_time: wakeTime.toISOString(),
+      leave_time: leaveHomeTime.toISOString(),
       target_type: "ARRIVAL"
     };
 
