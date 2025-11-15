@@ -39,13 +39,14 @@ export default function App() {
     };
 
     setSubmittedData(formData);
+    console.log(formData)
 
     try {
-      const res = await fetch("http://localhost:8000/schedule-sms", {
+      const res = await fetch("http://127.0.0.1:5000/schedule-sms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phone_number: phoneNumber,
+          phone_number: normalizePhone(phoneNumber),
           start_address: startAddress,
           event_address: eventAddress,
           transport_mode: transportMode,
@@ -97,6 +98,22 @@ export default function App() {
       minute: "2-digit",
     });
   };
+
+function normalizePhone(phoneNumber) {
+  if (!phoneNumber) return "";
+
+  // Remove spaces, dashes, parentheses, and any non-digit characters
+  let digitsOnly = phoneNumber.replace(/\D/g, "");
+
+  // Ensure it starts with '+1'
+  if (!digitsOnly.startsWith("1")) {
+    digitsOnly = "1" + digitsOnly;
+  }
+
+  return "+1" + digitsOnly.slice(1); 
+}
+
+
 
   return (
     <div style={styles.container}>
