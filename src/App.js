@@ -32,7 +32,7 @@ export default function App() {
       transport_mode: transportMode,
       preparation_minutes: prepMinutes,
       prep_checklist: prepChecklist,
-      target_time: eventDate,
+      target_time: eventTime,
       travel_minutes: travelMinutes,
       wake_time: wakeTime,
       leave_time: leaveHomeTime,
@@ -52,10 +52,10 @@ export default function App() {
           transport_mode: transportMode,
           prep_minutes: prepMinutes,
           prep_checklist: prepChecklist,
-          event_time: eventDate.toISOString(),
+          event_time: eventTime,
           travel_minutes: travelMinutes,
-          wake_time: wakeTime.toISOString(),
-          leave_time: leaveHomeTime.toISOString(),
+          wake_time: wakeTime,
+          leave_time: leaveHomeTime,
         }),
       });
 
