@@ -41,7 +41,7 @@ export default function App() {
     setSubmittedData(formData);
 
     try {
-      const res = await fetch("https://punctualbe.onrender.com/schedule-sms", {
+      const res = await fetch("https://punctualbe.onrender.com/alerts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
