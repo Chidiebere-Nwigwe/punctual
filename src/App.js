@@ -10,6 +10,7 @@ export default function App() {
   const [eventTime, setEventTime] = useState("");
   const [travelMinutes, setTravelMinutes] = useState(30);
   const [status, setStatus] = useState("");
+  const [submittedData, setSubmittedData] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +23,22 @@ export default function App() {
 
     const leaveHomeTime = new Date(eventDate.getTime() - travelMinutes * 60000);
     const wakeTime = new Date(leaveHomeTime.getTime() - prepMinutes * 60000);
+
+    // Save submitted data for display
+    const formData = {
+      phone_number: phoneNumber,
+      start_address: startAddress,
+      event_address: eventAddress,
+      transport_mode: transportMode,
+      prep_minutes: prepMinutes,
+      prep_checklist: prepChecklist,
+      event_time: eventDate,
+      travel_minutes: travelMinutes,
+      wake_time: wakeTime,
+      leave_time: leaveHomeTime,
+    };
+
+    setSubmittedData(formData);
 
     try {
       const res = await fetch("http://localhost:8000/schedule-sms", {
@@ -49,6 +66,36 @@ export default function App() {
       console.error(err);
       setStatus("❌ Server or Twilio error occurred.");
     }
+  };
+
+  const getTransportIcon = (mode) => {
+    const icons = {
+      transit: "🚇",
+      driving: "🚗",
+      walking: "🚶",
+      bicycling: "🚴",
+    };
+    return icons[mode] || "🚇";
+  };
+
+  const getTransportLabel = (mode) => {
+    const labels = {
+      transit: "Public Transit",
+      driving: "Driving",
+      walking: "Walking",
+      bicycling: "Bicycling",
+    };
+    return labels[mode] || mode;
+  };
+
+  const formatDateTime = (date) => {
+    return date.toLocaleString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
@@ -172,6 +219,110 @@ export default function App() {
         </form>
 
         {status && <p style={styles.status}>{status}</p>}
+
+        {/* Submitted Information Display */}
+        {submittedData && (
+          <div style={styles.summaryCard}>
+            <h2 style={styles.summaryTitle}>📋 Your Event Details</h2>
+
+            <div style={styles.summarySection}>
+              <div style={styles.summaryItem}>
+                <span style={styles.summaryLabel}>📱 Phone Number</span>
+                <span style={styles.summaryValue}>
+                  {submittedData.phone_number}
+                </span>
+              </div>
+
+              <div style={styles.summaryItem}>
+                <span style={styles.summaryLabel}>🕐 Event Time</span>
+                <span style={styles.summaryValue}>
+                  {formatDateTime(submittedData.event_time)}
+                </span>
+              </div>
+
+              <div style={styles.summaryItem}>
+                <span style={styles.summaryLabel}>📍 Event Location</span>
+                <span style={styles.summaryValue}>
+                  {submittedData.event_address}
+                </span>
+              </div>
+
+              <div style={styles.summaryItem}>
+                <span style={styles.summaryLabel}>🏠 Departure Location</span>
+                <span style={styles.summaryValue}>
+                  {submittedData.start_address}
+                </span>
+              </div>
+
+              <div style={styles.summaryItem}>
+                <span style={styles.summaryLabel}>
+                  {getTransportIcon(submittedData.transport_mode)}{" "}
+                  Transportation Mode
+                </span>
+                <span style={styles.summaryValue}>
+                  {getTransportLabel(submittedData.transport_mode)}
+                </span>
+              </div>
+
+              <div style={styles.summaryItem}>
+                <span style={styles.summaryLabel}>⏱️ Travel Time</span>
+                <span style={styles.summaryValue}>
+                  {submittedData.travel_minutes} minutes
+                </span>
+              </div>
+
+              <div style={styles.summaryItem}>
+                <span style={styles.summaryLabel}>⏲️ Prep Time</span>
+                <span style={styles.summaryValue}>
+                  {submittedData.prep_minutes} minutes
+                </span>
+              </div>
+
+              {submittedData.prep_checklist && (
+                <div style={styles.summaryItem}>
+                  <span style={styles.summaryLabel}>✅ Prep Checklist</span>
+                  <pre style={styles.checklistValue}>
+                    {submittedData.prep_checklist}
+                  </pre>
+                </div>
+              )}
+
+              <div style={styles.timelineSection}>
+                <h3 style={styles.timelineTitle}>⏰ Your Schedule</h3>
+
+                <div style={styles.timelineItem}>
+                  <span style={styles.timelineIcon}>🌅</span>
+                  <div>
+                    <div style={styles.timelineLabel}>Start Prep Time</div>
+                    <div style={styles.timelineValue}>
+                      {formatDateTime(submittedData.wake_time)}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={styles.timelineItem}>
+                  <span style={styles.timelineIcon}>🚪</span>
+                  <div>
+                    <div style={styles.timelineLabel}>Leave Time</div>
+                    <div style={styles.timelineValue}>
+                      {formatDateTime(submittedData.leave_time)}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={styles.timelineItem}>
+                  <span style={styles.timelineIcon}>🎯</span>
+                  <div>
+                    <div style={styles.timelineLabel}>Event Time</div>
+                    <div style={styles.timelineValue}>
+                      {formatDateTime(submittedData.event_time)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -272,5 +423,88 @@ const styles = {
     fontWeight: "600",
     color: "#22c55e",
     fontSize: "14px",
+  },
+  summaryCard: {
+    marginTop: "30px",
+    padding: "20px",
+    background: "#f8f9fa",
+    borderRadius: "12px",
+    border: "2px solid #e9ecef",
+  },
+  summaryTitle: {
+    fontSize: "20px",
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: "16px",
+    textAlign: "center",
+  },
+  summarySection: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
+  summaryItem: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    padding: "12px",
+    background: "white",
+    borderRadius: "8px",
+    border: "1px solid #e9ecef",
+  },
+  summaryLabel: {
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#666",
+    textTransform: "uppercase",
+  },
+  summaryValue: {
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#333",
+  },
+  checklistValue: {
+    fontSize: "14px",
+    fontWeight: "400",
+    color: "#333",
+    whiteSpace: "pre-wrap",
+    fontFamily: "inherit",
+    margin: 0,
+  },
+  timelineSection: {
+    marginTop: "16px",
+    padding: "16px",
+    background: "white",
+    borderRadius: "8px",
+    border: "1px solid #e9ecef",
+  },
+  timelineTitle: {
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: "12px",
+  },
+  timelineItem: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "12px",
+    marginBottom: "12px",
+    paddingBottom: "12px",
+    borderBottom: "1px solid #f0f0f0",
+  },
+  timelineIcon: {
+    fontSize: "24px",
+    marginTop: "4px",
+  },
+  timelineLabel: {
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#666",
+    marginBottom: "2px",
+  },
+  timelineValue: {
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#333",
   },
 };
