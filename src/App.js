@@ -27,15 +27,16 @@ export default function App() {
     // Save submitted data for display
     const formData = {
       phone_number: phoneNumber,
-      start_address: startAddress,
-      event_address: eventAddress,
+      origin_text: startAddress,
+      destination_text: eventAddress,
       transport_mode: transportMode,
-      prep_minutes: prepMinutes,
+      preparation_minutes: prepMinutes,
       prep_checklist: prepChecklist,
-      event_time: eventDate,
+      target_time: eventDate,
       travel_minutes: travelMinutes,
       wake_time: wakeTime,
       leave_time: leaveHomeTime,
+      target_type: "ARRIVAL"
     };
 
     setSubmittedData(formData);
